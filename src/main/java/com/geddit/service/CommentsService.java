@@ -15,34 +15,33 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CommentService {
+public class CommentsService {
   private final CommentRepository commentRepository;
-  private final PostService postService;
-  private final UserService userService;
+  private final PostsService postsService;
+  private final UsersService usersService;
 
-  public CommentService(
+  public CommentsService(
       CommentRepository commentRepository,
       UserRepository userRepository,
-      PostService postService,
-      UserService userService) {
+      PostsService postsService,
+      UsersService usersService) {
     this.commentRepository = commentRepository;
-    this.postService = postService;
-    this.userService = userService;
+    this.postsService = postsService;
+    this.usersService = usersService;
   }
 
   public CommentDTO createComment(
       String postId, String username, CreateCommentDTO createCommentDTO) {
-    Post post = postService.getPostById(postId);
-    AppUser author = userService.getUserByUsername(username);
+    Post post = postsService.getPostById(postId);
+    AppUser author = usersService.getUserByUsername(username);
 
     Comment comment = new Comment(createCommentDTO.text(), author, post);
     return CommentToDTOConverter.toDTO(commentRepository.save(comment));
   }
 
-  public CommentDTO createReply(
-      String communityName, String postId, String commentId, CreateCommentDTO createCommentDTO) {
+  public CommentDTO createReplyToComment(String commentId, CreateCommentDTO createCommentDTO) {
     Comment parentComment = getCommentById(commentId);
-    AppUser author = userService.getUserById(null);
+    AppUser author = usersService.getUserById(null);
 
     Comment reply = new Comment(createCommentDTO.text(), author, parentComment.getPost());
 
@@ -58,7 +57,7 @@ public class CommentService {
   }
 
   public Set<Comment> getCommentsByPostId(String postId) {
-    Post post = postService.getPostById(postId);
+    Post post = postsService.getPostById(postId);
 
     Set<Comment> postComments = post.getComments();
     return postComments;

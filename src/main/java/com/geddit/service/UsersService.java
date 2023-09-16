@@ -12,10 +12,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UsersService {
   private final UserRepository userRepository;
 
-  public UserService(UserRepository userRepository) {
+  public UsersService(UserRepository userRepository) {
     this.userRepository = userRepository;
   }
 

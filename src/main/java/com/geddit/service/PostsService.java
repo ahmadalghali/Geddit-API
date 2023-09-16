@@ -17,27 +17,27 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class PostService {
+public class PostsService {
 
   private final PostRepository postRepository;
   private final CommunityRepository communityRepository;
-  private final CommunityService communityService;
-  private final UserService userService;
+  private final CommunitiesService communitiesService;
+  private final UsersService usersService;
 
-  public PostService(
+  public PostsService(
       PostRepository postRepository,
       CommunityRepository communityRepository,
-      CommunityService communityService,
-      UserService userService) {
+      CommunitiesService communitiesService,
+      UsersService usersService) {
     this.postRepository = postRepository;
     this.communityRepository = communityRepository;
-    this.communityService = communityService;
-    this.userService = userService;
+    this.communitiesService = communitiesService;
+    this.usersService = usersService;
   }
 
   public PostDTO createPost(String communityName, CreatePostDTO createPostDTO, String username) {
-    Community community = communityService.getCommunityByName(communityName);
-    AppUser author = userService.getUserByUsername(username);
+    Community community = communitiesService.getCommunityByName(communityName);
+    AppUser author = usersService.getUserByUsername(username);
     Post post = new Post(createPostDTO.title(), community, author);
 
     if (!createPostDTO.body().trim().isEmpty()) {
@@ -52,7 +52,7 @@ public class PostService {
     return postRepository.findAllPostsByCommunityName(communityName);
   }
 
-  public PostDTO getPost(String postId) {
+  public PostDTO getPostDTOById(String postId) {
     return PostToDTOConverter.toDTO(getPostById(postId));
   }
 

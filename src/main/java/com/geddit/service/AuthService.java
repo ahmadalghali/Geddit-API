@@ -10,18 +10,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-        private final UserService userService;
+        private final UsersService usersService;
 
-        public AuthService(UserService userService) {
-        this.userService = userService;
+        public AuthService(UsersService usersService) {
+        this.usersService = usersService;
         }
 
     public UserDTO register(UserRegisterRequestDTO userRegisterRequestDTO) {
         Optional<AppUser> userOptional =
-                userService.getUserOptionalByUsername(userRegisterRequestDTO.getUsername());
+                usersService.getUserOptionalByUsername(userRegisterRequestDTO.getUsername());
 
         if (userOptional.isPresent()) throw new IllegalArgumentException("Username already exists");
-        AppUser savedUser = userService.createUser(userRegisterRequestDTO);
+        AppUser savedUser = usersService.createUser(userRegisterRequestDTO);
         return UserToDTOConverter.toDTO(savedUser);
     }
 
@@ -29,7 +29,7 @@ public class AuthService {
         String userSignInUsername = userSignInRequestDTO.getUsername();
         String userSignInPassword = userSignInRequestDTO.getPassword();
         
-        AppUser user = userService.getUserByUsername(userSignInUsername);
+        AppUser user = usersService.getUserByUsername(userSignInUsername);
         if (userSignInPassword.equals(user.getPassword())) {
             return UserToDTOConverter.toDTO(user);
         }

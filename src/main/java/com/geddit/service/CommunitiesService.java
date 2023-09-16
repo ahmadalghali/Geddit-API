@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class CommunityService {
+public class CommunitiesService {
 
   private final CommunityRepository communityRepository;
 
-  public CommunityService(CommunityRepository communityRepository) {
+  public CommunitiesService(CommunityRepository communityRepository) {
     this.communityRepository = communityRepository;
   }
 
@@ -47,14 +47,6 @@ public class CommunityService {
     return communityRepository
         .findCommunitySummaryByName(communityName)
         .orElseThrow(() -> new CommunityNotFoundException(communityName));
-  }
-
-  public CommunitySummaryDTO updateCommunity(String communityName, Community updatedCommunity) {
-    final Community existingCommunity = getCommunityByName(communityName);
-    if (updatedCommunity.getDescription() != null) {
-      existingCommunity.setDescription(updatedCommunity.getDescription());
-    }
-    return CommunityToDTOConverter.toDTO(saveCommunity(existingCommunity));
   }
 
   private Community saveCommunity(Community newCommunity) {

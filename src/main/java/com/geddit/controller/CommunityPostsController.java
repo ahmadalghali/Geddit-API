@@ -3,7 +3,7 @@ package com.geddit.controller;
 import com.geddit.dto.post.CreatePostDTO;
 import com.geddit.dto.post.PostDTO;
 import com.geddit.dto.post.PostSummaryDTO;
-import com.geddit.service.PostService;
+import com.geddit.service.PostsService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/communities/{communityName}/posts")
 public class CommunityPostsController {
 
-  private final PostService postService;
+  private final PostsService postsService;
 
-  public CommunityPostsController(PostService postService) {
-    this.postService = postService;
+  public CommunityPostsController(PostsService postsService) {
+    this.postsService = postsService;
   }
 
   @PostMapping
@@ -25,18 +25,18 @@ public class CommunityPostsController {
       @RequestBody CreatePostDTO createPostDTO,
       @RequestHeader("username") String username) {
     System.out.println("username = " + username);
-    return postService.createPost(communityName, createPostDTO, username);
+    return postsService.createPost(communityName, createPostDTO, username);
   }
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<PostSummaryDTO> getAllPostsByCommunityName(@PathVariable String communityName) {
-    return postService.getAllPostsByCommunityName(communityName);
+    return postsService.getAllPostsByCommunityName(communityName);
   }
 
   @GetMapping("/{postId}")
   @ResponseStatus(HttpStatus.OK)
   public PostDTO getPost(@PathVariable String postId) {
-    return postService.getPost(postId);
+    return postsService.getPostDTOById(postId);
   }
 }

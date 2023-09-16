@@ -8,26 +8,26 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SearchService {
-    private final CommunityService communityService;
-    private final PostService postService;
-    private final UserService userService;
+    private final CommunitiesService communitiesService;
+    private final PostsService postsService;
+    private final UsersService usersService;
 
-    public SearchService(CommunityService communityService, PostService postService, UserService userService) {
-        this.communityService = communityService;
-        this.postService = postService;
-        this.userService = userService;
+    public SearchService(CommunitiesService communitiesService, PostsService postsService, UsersService usersService) {
+        this.communitiesService = communitiesService;
+        this.postsService = postsService;
+        this.usersService = usersService;
     }
 
     public List<CommunitySummaryDTO> searchCommunitiesByKeyword(String keyword) {
-        return communityService.searchCommunitiesByKeyword(keyword);
+        return communitiesService.searchCommunitiesByKeyword(keyword);
     }
 
     public List<PostSummaryDTO> searchPostsByKeyword(String keyword) {
-        return postService.searchPostsByKeyword(keyword);
+        return postsService.searchPostsByKeyword(keyword);
     }
 
     public List<UserDTO> searchUsersByKeyword(String keyword) {
-        return userService.searchUsersByKeyword(keyword);
+        return usersService.searchUsersByKeyword(keyword);
     }
 }
 
