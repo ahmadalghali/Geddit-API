@@ -1,12 +1,12 @@
 server:
   servlet:
-    context-path: /goGedit/api
+    context-path: /geddit/api
 
 spring:
   profiles:
     active: local
     datasource:
-      url: jdbc:postgresql://localhost:5432/goGedit
+      url: jdbc:postgresql://localhost:5432/geddit
       username:
       password:
   jpa:

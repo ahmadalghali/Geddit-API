@@ -8,12 +8,12 @@
 		<version>3.2.0-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.Gogedit</groupId>
-	<artifactId>Gogedit</artifactId>
+	<groupId>com.geddit</groupId>
+	<artifactId>geddit</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>goGedit</name>
-	<description>GoGedit API</description>
+	<name>geddit</name>
+	<description>Geddit API</description>
 
 	<properties>
 		<java.version>20</java.version>
