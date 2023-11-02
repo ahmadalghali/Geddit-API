@@ -28,14 +28,14 @@ public class PostsController {
 
   @DeleteMapping("/{postId}")
   @ResponseStatus(HttpStatus.OK)
-  public void deletePost(@PathVariable String postId) {
-    postsService.deletePost(postId);
+  public void deletePost(@PathVariable String postId, @RequestHeader("username") String username) {
+    postsService.deletePost(postId, username);
   }
 
   @PatchMapping("/{postId}")
   @ResponseStatus(HttpStatus.OK)
-  public PostDTO updatePost(@PathVariable String postId, @RequestBody UpdatePostDTO updatePostDTO) {
-    return postsService.updatePost(postId, updatePostDTO);
+  public PostDTO updatePost(@PathVariable String postId, @RequestBody UpdatePostDTO updatePostDTO, @RequestHeader("username") String username) {
+    return postsService.updatePost(postId, updatePostDTO, username);
   }
 
 }

@@ -2,17 +2,20 @@ package com.geddit.persistence.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 
-@NoArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor @Getter @Setter
 @Entity
 @SQLDelete(sql = "UPDATE post SET deleted = true WHERE id=?")
 @Where(clause = "deleted = false")
@@ -39,6 +42,12 @@ public class Post {
   @ManyToOne
   @JoinColumn(nullable = false)
   private AppUser author;
+
+  @ManyToMany
+  Set<AppUser> upvotedBy = new HashSet<>();
+
+  @ManyToMany
+  Set<AppUser> downvotedBy = new HashSet<>();
 
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)

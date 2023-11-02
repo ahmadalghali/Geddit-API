@@ -49,7 +49,7 @@ public class PostsService {
 
   public List<PostSummaryDTO> getAllPostsByCommunityName(String communityName) {
 
-    return postRepository.findAllPostsByCommunityName(communityName);
+    return PostToDTOConverter.toSummaryDTOList(postRepository.findAllPostsByCommunityName(communityName));
   }
 
   public PostDTO getPostDTOById(String postId) {
@@ -61,22 +61,73 @@ public class PostsService {
   }
 
   public List<PostSummaryDTO> searchPostsByKeyword(String keyword) {
-    return postRepository.findAllByTitleContainingIgnoreCase(keyword);
+    return PostToDTOConverter.toSummaryDTOList(postRepository.findAllByTitleContainingIgnoreCase(keyword));
   }
 
   public List<PostSummaryDTO> getUserPosts(String username) {
-    return postRepository.findAllByUsername(username);
+    return PostToDTOConverter.toSummaryDTOList(postRepository.findAllByUsername(username));
   }
 
-  public void deletePost(String postId) {
+  public void deletePost(String postId, String username) {
     postRepository.deleteById(postId);
   }
 
-  public PostDTO updatePost(String postId, UpdatePostDTO updatePostDTO) {
+  public PostDTO updatePost(String postId, UpdatePostDTO updatePostDTO, String username) {
     Post post = getPostById(postId);
+    AppUser me = usersService.getUserByUsername(username);
 
     if (updatePostDTO.body() != null) {
       post.setBody(updatePostDTO.body());
+    }
+
+    return PostToDTOConverter.toDTO(postRepository.save(post));
+  }
+
+  public PostDTO upvotePost(String postId, String username) {
+    Post post = getPostById(postId);
+    AppUser user = usersService.getUserByUsername(username);
+
+    if (post.getDownvotedBy().contains(user)) {
+      post.getDownvotedBy().remove(user);
+    }
+
+    post.getUpvotedBy().add(user);
+
+//    if (post.getUpvotedBy().contains(user)) {
+//      throw new IllegalArgumentException("User already ");
+//    }
+
+    return PostToDTOConverter.toDTO(postRepository.save(post));
+  }
+
+  public PostDTO downvotePost(String postId, String username) {
+    Post post = getPostById(postId);
+    AppUser user = usersService.getUserByUsername(username);
+
+    if (post.getUpvotedBy().contains(user)) {
+      post.getUpvotedBy().remove(user);
+    }
+
+    post.getDownvotedBy().add(user);
+
+//    if (post.getUpvotedBy().contains(user)) {
+//      throw new IllegalArgumentException("User already ");
+//    }
+
+    return PostToDTOConverter.toDTO(postRepository.save(post));
+  }
+
+  public PostDTO removeVoteFromPost(String postId, String username) {
+
+    Post post = getPostById(postId);
+    AppUser user = usersService.getUserByUsername(username);
+
+    if (post.getUpvotedBy().contains(user)) {
+      post.getUpvotedBy().remove(user);
+    }
+
+    if (post.getDownvotedBy().contains(user)) {
+      post.getDownvotedBy().remove(user);
     }
 
     return PostToDTOConverter.toDTO(postRepository.save(post));

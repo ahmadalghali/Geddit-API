@@ -5,6 +5,8 @@ import com.geddit.dto.post.PostDTO;
 import com.geddit.dto.post.PostSummaryDTO;
 import com.geddit.service.PostsService;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +24,8 @@ public class CommunityPostsController {
   @ResponseStatus(HttpStatus.CREATED)
   public PostDTO createPost(
       @PathVariable String communityName,
-      @RequestBody CreatePostDTO createPostDTO,
+      @Valid @RequestBody CreatePostDTO createPostDTO,
       @RequestHeader("username") String username) {
-    System.out.println("username = " + username);
     return postsService.createPost(communityName, createPostDTO, username);
   }
 

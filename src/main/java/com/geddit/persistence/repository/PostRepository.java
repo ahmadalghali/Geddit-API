@@ -1,53 +1,39 @@
 package com.geddit.persistence.repository;
 
-import com.geddit.dto.post.PostSummaryDTO;
 import com.geddit.persistence.entity.Post;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface PostRepository extends JpaRepository<Post, String> {
 
-  @Query(
-      """
-        SELECT new com.geddit.dto.post.PostSummaryDTO(p.id, p.title, p.body, c.name, p.createdDate, SIZE(p.comments), author.username)
-        FROM Post p
-        LEFT JOIN p.community c
-        LEFT JOIN p.author author
-        ORDER BY p.createdDate DESC
-        LIMIT 20
-    """)
-  List<PostSummaryDTO> findMostRecentPostsLimit20();
+    @Query("""
+                SELECT p FROM Post p
+                ORDER BY p.createdDate DESC
+                LIMIT 20
+            """)
+    List<Post> findMostRecentPostsLimit20();
 
-  @Query(
-    """
-        SELECT new com.geddit.dto.post.PostSummaryDTO(p.id, p.title, p.body, c.name, p.createdDate, SIZE(p.comments), author.username)
-        FROM Post p
-        LEFT JOIN p.community c
-        LEFT JOIN p.author author
-        WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
-      """)
-  List<PostSummaryDTO> findAllByTitleContainingIgnoreCase(String keyword);
+    @Query("""
+              SELECT p FROM Post p
+              WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            """)
+    List<Post> findAllByTitleContainingIgnoreCase(String keyword);
 
-  @Query(
-      """
-    SELECT new com.geddit.dto.post.PostSummaryDTO(p.id, p.title, p.body, c.name, p.createdDate, SIZE(p.comments), author.username)
-    FROM Post p
-    LEFT JOIN p.community c
-    LEFT JOIN p.author author
-    WHERE c.name = :communityName
-    ORDER BY p.createdDate DESC
-""")
-  List<PostSummaryDTO> findAllPostsByCommunityName(String communityName);
+    @Query("""
+                SELECT p FROM Post p
+                LEFT JOIN p.community c
+                WHERE c.name = :communityName
+                ORDER BY p.createdDate DESC
+            """)
+    List<Post> findAllPostsByCommunityName(String communityName);
 
-  @Query(
-          """
-        SELECT new com.geddit.dto.post.PostSummaryDTO(p.id, p.title, p.body, c.name, p.createdDate, SIZE(p.comments), author.username)
-        FROM Post p
-        LEFT JOIN p.community c
-        LEFT JOIN p.author author
-        WHERE author.username = :username
-        ORDER BY p.createdDate DESC
-    """)
-  List<PostSummaryDTO> findAllByUsername(String username);
+    @Query("""
+                SELECT p FROM Post p
+                LEFT JOIN p.author author
+                WHERE author.username = :username
+                ORDER BY p.createdDate DESC
+            """)
+    List<Post> findAllByUsername(String username);
 }
