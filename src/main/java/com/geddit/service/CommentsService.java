@@ -1,9 +1,11 @@
 package com.geddit.service;
 
 import com.geddit.converter.CommentToDTOConverter;
+import com.geddit.converter.PostToDTOConverter;
 import com.geddit.dto.comment.CommentDTO;
 import com.geddit.dto.comment.CreateCommentDTO;
 import com.geddit.dto.comment.UpdateCommentDTO;
+import com.geddit.dto.post.PostDTO;
 import com.geddit.exceptions.CommentNotFoundException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.persistence.entity.Comment;
@@ -11,6 +13,7 @@ import com.geddit.persistence.entity.Post;
 import com.geddit.persistence.repository.CommentRepository;
 import com.geddit.persistence.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +42,10 @@ public class CommentsService {
     return CommentToDTOConverter.toDTO(commentRepository.save(comment));
   }
 
-  public CommentDTO createReplyToComment(String commentId, CreateCommentDTO createCommentDTO) {
+  public CommentDTO createReplyToComment(String commentId, String username, CreateCommentDTO createCommentDTO) {
     Comment parentComment = getCommentById(commentId);
-    AppUser author = usersService.getUserById(null);
+
+    AppUser author = usersService.getUserByUsername(username);
 
     Comment reply = new Comment(createCommentDTO.text(), author, parentComment.getPost());
 
@@ -63,9 +67,9 @@ public class CommentsService {
     return postComments;
   }
 
-  public List<Comment> getUserComments(String username) {
+  public Set<CommentDTO> getUserComments(String username) {
     List<Comment> allByAuthorUsername = commentRepository.findAllByAuthorUsername(username);
-    return allByAuthorUsername;
+    return CommentToDTOConverter.toDTOSet(allByAuthorUsername);
   }
 
   public void deleteComment(String commentId) {
@@ -81,4 +85,47 @@ public class CommentsService {
 
     return CommentToDTOConverter.toDTO(commentRepository.save(comment));
   }
+
+  public CommentDTO upvoteComment(String commentId, String username) {
+    Comment comment = getCommentById(commentId);
+    AppUser user = usersService.getUserByUsername(username);
+
+    if (comment.getDownvotedBy().contains(user)) {
+      comment.getDownvotedBy().remove(user);
+    }
+
+    comment.getUpvotedBy().add(user);
+
+    return CommentToDTOConverter.toDTO(commentRepository.save(comment));
+  }
+
+  public CommentDTO downvoteComment(String commentId, String username) {
+    Comment comment = getCommentById(commentId);
+    AppUser user = usersService.getUserByUsername(username);
+
+    if (comment.getUpvotedBy().contains(user)) {
+      comment.getUpvotedBy().remove(user);
+    }
+
+    comment.getDownvotedBy().add(user);
+    return CommentToDTOConverter.toDTO(commentRepository.save(comment));
+
+  }
+
+  public CommentDTO removeVoteFromComment(String commentId, String username) {
+    Comment comment = getCommentById(commentId);
+
+    AppUser user = usersService.getUserByUsername(username);
+
+    if (comment.getUpvotedBy().contains(user)) {
+      comment.getUpvotedBy().remove(user);
+    }
+
+    if (comment.getDownvotedBy().contains(user)) {
+      comment.getDownvotedBy().remove(user);
+    }
+
+    return CommentToDTOConverter.toDTO(commentRepository.save(comment));
+  }
+
 }

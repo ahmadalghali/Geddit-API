@@ -29,13 +29,5 @@ public class CommentsController {
     return commentsService.patchUpdateComment(commentId, updateCommentDTO);
   }
 
-  @PostMapping("/{commentId}/replies")
-  @ResponseStatus(HttpStatus.CREATED)
-  public CommentDTO createReplyToComment(
-          @PathVariable String commentId,
-          @RequestBody CreateCommentDTO createCommentDTO) {
-    return commentsService.createReplyToComment(commentId, createCommentDTO);
-  }
-
 }
 

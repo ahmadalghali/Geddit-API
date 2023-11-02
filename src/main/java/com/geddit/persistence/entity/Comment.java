@@ -3,7 +3,12 @@ package com.geddit.persistence.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
@@ -34,10 +39,17 @@ public class Comment {
   @JoinColumn(nullable = false)
   private Post post;
 
-  @ManyToOne private Comment parentComment;
+  @ManyToOne()
+  private Comment parentComment;
 
   @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
   private Set<Comment> replies = new HashSet<>();
+
+  @ManyToMany
+  Set<AppUser> upvotedBy = new HashSet<>();
+
+  @ManyToMany
+  Set<AppUser> downvotedBy = new HashSet<>();
 
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)
@@ -50,5 +62,9 @@ public class Comment {
     this.text = text;
     this.author = author;
     this.post = post;
+  }
+
+  public Optional<Comment> getParentComment() {
+    return Optional.ofNullable(parentComment);
   }
 }

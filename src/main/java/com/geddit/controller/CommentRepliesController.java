@@ -12,30 +12,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/posts/{postId}/comments")
-public class PostCommentsController {
+@RequestMapping("/comments/{commentId}/replies")
+public class CommentRepliesController {
 
-  private final PostsService postsService;
   private final CommentsService commentsService;
 
-  public PostCommentsController(PostsService postsService, CommentsService commentsService) {
-    this.postsService = postsService;
+  public CommentRepliesController(CommentsService commentsService) {
     this.commentsService = commentsService;
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommentDTO createComment(
-          @PathVariable String postId,
+  public CommentDTO createReply(
+          @PathVariable String commentId,
           @Valid @RequestBody CreateCommentDTO createCommentDto,
           @RequestHeader("username") String username) {
-    return commentsService.createComment(postId, username, createCommentDto);
-  }
-
-  @GetMapping
-  @ResponseStatus(HttpStatus.OK)
-  public Set<CommentDTO> getCommentsByPostId(@PathVariable String postId) {
-    return CommentToDTOConverter.toDTOSet(commentsService.getCommentsByPostId(postId));
+    return commentsService.createReplyToComment(commentId, username, createCommentDto);
   }
 
 }
