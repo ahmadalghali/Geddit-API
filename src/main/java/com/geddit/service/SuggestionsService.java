@@ -1,5 +1,6 @@
 package com.geddit.service;
 
+import com.geddit.converter.PostToDTOConverter;
 import com.geddit.dto.post.PostSummaryDTO;
 import com.geddit.persistence.repository.PostRepository;
 import java.util.List;
@@ -15,6 +16,6 @@ public class SuggestionsService {
   }
 
   public List<PostSummaryDTO> getSuggestedPosts() {
-    return postRepository.findMostRecentPostsLimit20();
+    return PostToDTOConverter.toSummaryDTOList(postRepository.findMostRecentPostsLimit20());
   }
 }
