@@ -1,10 +1,13 @@
 package com.geddit.persistence.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -17,14 +20,19 @@ import org.springframework.data.annotation.CreatedDate;
 )
 public class Community {
 
-
   @Id
   @Column(nullable = false, unique = true)
   private String name;
 
-  @NotNull
   @Column(nullable = false)
   private String description;
+
+  @Column
+  private String imageUrl;
+
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private AppUser createdBy;
 
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)
@@ -34,10 +42,15 @@ public class Community {
   @OneToMany(mappedBy = "community")
   private List<Post> posts = new ArrayList<>();
 
-  public Community(String name, String description) {
+  @ManyToMany
+  @JoinTable
+  private Set<AppUser> members = new HashSet<>();
+
+
+  public Community(String name, String description, AppUser createdBy) {
     this.name = name;
     this.description = description;
+    this.createdBy = createdBy;
   }
-
 
 }

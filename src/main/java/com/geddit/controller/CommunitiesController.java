@@ -8,14 +8,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/communities")
@@ -30,8 +23,20 @@ public class CommunitiesController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommunitySummaryDTO createCommunity(@RequestBody CreateCommunityDTO createCommunityDTO) {
-    return communitiesService.createCommunity(createCommunityDTO);
+  public CommunitySummaryDTO createCommunity(@Valid @RequestBody CreateCommunityDTO createCommunityDTO, @RequestHeader("username") String username) {
+    return communitiesService.createCommunity(createCommunityDTO, username);
+  }
+
+  @PostMapping("/{communityName}/join")
+  @ResponseStatus(HttpStatus.OK)
+  public Integer joinCommunity(@PathVariable String communityName, @RequestHeader("username") String username) {
+    return communitiesService.joinCommunity(communityName, username);
+  }
+
+  @DeleteMapping("/{communityName}/leave")
+  @ResponseStatus(HttpStatus.OK)
+  public Integer leaveCommunity(@PathVariable String communityName, @RequestHeader("username") String username) {
+    return communitiesService.leaveCommunity(communityName, username);
   }
 
   @GetMapping("/{communityName}")
@@ -40,7 +45,6 @@ public class CommunitiesController {
     return communitiesService.getCommunitySummaryByName(communityName);
   }
 
-//  TODO: Mark as dev only endpoint
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<CommunitySummaryDTO> getAllCommunities() {
