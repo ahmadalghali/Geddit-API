@@ -18,7 +18,7 @@ public class AuthService {
 
     public UserDTO register(UserRegisterRequestDTO userRegisterRequestDTO) {
         Optional<AppUser> userOptional =
-                usersService.getUserOptionalByUsername(userRegisterRequestDTO.getUsername());
+                usersService.getUserOptionalByUsername(userRegisterRequestDTO.username());
 
         if (userOptional.isPresent()) throw new IllegalArgumentException("Username already exists");
         AppUser savedUser = usersService.createUser(userRegisterRequestDTO);
@@ -26,8 +26,8 @@ public class AuthService {
     }
 
     public UserDTO signIn(UserSignInRequestDTO userSignInRequestDTO) {
-        String userSignInUsername = userSignInRequestDTO.getUsername();
-        String userSignInPassword = userSignInRequestDTO.getPassword();
+        String userSignInUsername = userSignInRequestDTO.username();
+        String userSignInPassword = userSignInRequestDTO.password();
         
         AppUser user = usersService.getUserByUsername(userSignInUsername);
         if (userSignInPassword.equals(user.getPassword())) {

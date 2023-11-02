@@ -2,7 +2,12 @@ package com.geddit.persistence.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,8 +26,19 @@ public class AppUser {
     @NotNull
     private String password;
 
+    @Column
+    private String profileImageUrl;
+
     @OneToMany
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable
+    private Set<AppUser> following = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable
+    private Set<AppUser> followers = new HashSet<>();
 
     public AppUser(String username, String password) {
         this.username = username;

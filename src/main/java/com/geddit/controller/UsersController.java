@@ -2,14 +2,16 @@ package com.geddit.controller;
 
 import com.geddit.converter.UserToDTOConverter;
 import com.geddit.dto.UserDTO;
+import com.geddit.dto.comment.CommentDTO;
 import com.geddit.dto.post.PostSummaryDTO;
-import com.geddit.persistence.entity.Comment;
 import com.geddit.service.CommentsService;
 import com.geddit.service.PostsService;
 import com.geddit.service.UsersService;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -38,10 +40,20 @@ public class UsersController {
 
     @GetMapping("/{username}/comments")
     @ResponseStatus(HttpStatus.OK)
-    public List<Comment> getUserComments(@PathVariable String username) {
+    public Set<CommentDTO> getUserComments(@PathVariable String username) {
         return commentsService.getUserComments(username);
     }
 
+    @PostMapping("/{username}/follow")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void followUser(@PathVariable("username") String usernameToFollow, @RequestHeader("username") String username) {
+        usersService.followUser(usernameToFollow, username);
+    }
 
+    @DeleteMapping("/{username}/unfollow")
+    @ResponseStatus(HttpStatus.OK)
+    public void unfollowUser(@PathVariable("username") String usernameToUnfollow, @RequestHeader("username") String username) {
+        usersService.unfollowUser(usernameToUnfollow, username);
+    }
 
 }

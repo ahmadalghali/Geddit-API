@@ -1,9 +1,13 @@
 package com.geddit.dto;
 
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Getter
-public class UserSignInRequestDTO {
-    private String username;
-    private String password;
-}
+public record UserSignInRequestDTO(
+        @NotBlank
+        @NotNull
+        String username,
+        @NotBlank
+        @NotNull
+        String password
+) {}

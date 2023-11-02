@@ -42,9 +42,9 @@ public class FakeDataLoader implements CommandLineRunner {
 
   private void seedDatabase() {
     List<AppUser> savedUsers = seedUsers();
-    List<Community> savedCommunities = seedCommunities();
+    List<Community> savedCommunities = seedCommunities(savedUsers);
     List<Post> savedPosts = seedPosts(savedCommunities, savedUsers);
-    List<Comment> savedComments = seedComments(savedPosts, savedUsers);
+//    List<Comment> savedComments = seedComments(savedPosts, savedUsers);
   }
 
   private List<AppUser> seedUsers() {
@@ -55,11 +55,13 @@ public class FakeDataLoader implements CommandLineRunner {
       AppUser appUser = new AppUser(username, "password123");
       savedUsers.add(userRepository.save(appUser));
     }
-    userRepository.save(new AppUser("ahmad", "password123"));
+    userRepository.save(new AppUser("ahmad", "123"));
+    userRepository.save(new AppUser("mohie", "123"));
+
     return savedUsers;
   }
 
-  private List<Community> seedCommunities() {
+  private List<Community> seedCommunities(List<AppUser> users) {
 
     List<Community> savedCommunities = new ArrayList<>();
 
@@ -78,9 +80,11 @@ public class FakeDataLoader implements CommandLineRunner {
     };
 
     for (int i = 0; i < communityNames.length; i++) {
+      AppUser createdBy = getRandomItem(users);
+
       String description = faker.lorem().sentence();
       String name = communityNames[i];
-      Community community = new Community(name, description);
+      Community community = new Community(name, description, createdBy);
       savedCommunities.add(communityRepository.save(community));
     }
 

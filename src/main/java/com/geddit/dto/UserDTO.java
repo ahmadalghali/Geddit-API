@@ -1,11 +1,3 @@
 package com.geddit.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@AllArgsConstructor
-@Getter
-public class UserDTO {
-    private String id;
-    private String username;
-}
+public record UserDTO (String id, String username, String profileImageUrl, Integer followerCount, Integer followingCount ) {};
