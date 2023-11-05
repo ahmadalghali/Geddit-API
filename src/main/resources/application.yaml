@@ -4,14 +4,12 @@ server:
 
 spring:
   profiles:
-    active: local
+    active: dev
     datasource:
-      url: jdbc:postgresql://localhost:5432/geddit
-      username:
-      password:
+      url: ${SPRING_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
-    hibernate:
-      ddl-auto: create-drop
     properties:
       hibernate:
         jdbc.batch_size: 30
