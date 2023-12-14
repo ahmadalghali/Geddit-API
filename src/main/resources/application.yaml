@@ -17,7 +17,11 @@ spring:
         format_sql: true
 logging:
   level:
+    root: DEBUG
     web: info
+    org:
+      springframework:
+        security: TRACE
 springdoc:
   api-docs:
     path: /swagger/api-docs
