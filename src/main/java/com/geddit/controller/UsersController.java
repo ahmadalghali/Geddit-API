@@ -4,10 +4,12 @@ import com.geddit.converter.UserToDTOConverter;
 import com.geddit.dto.UserDTO;
 import com.geddit.dto.comment.CommentDTO;
 import com.geddit.dto.post.PostSummaryDTO;
+import com.geddit.persistence.entity.AppUser;
 import com.geddit.service.CommentsService;
 import com.geddit.service.PostsService;
 import com.geddit.service.UsersService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +31,7 @@ public class UsersController {
     @GetMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
     public UserDTO getUserProfile(@PathVariable String username) {
-        return UserToDTOConverter.toDTO(usersService.getUserByUsername(username));
+        return UserToDTOConverter.toDTO(usersService.getUserByEmail(username));
     }
 
     @GetMapping("/{username}/posts")
@@ -46,14 +48,27 @@ public class UsersController {
 
     @PostMapping("/{username}/follow")
     @ResponseStatus(HttpStatus.CREATED)
-    public void followUser(@PathVariable("username") String usernameToFollow, @RequestHeader("username") String username) {
-        usersService.followUser(usernameToFollow, username);
+    public void followUser(@PathVariable("username") String usernameToFollow, @AuthenticationPrincipal AppUser principal) {
+        AppUser user = usersService.getUserById(principal.getId());
+
+        usersService.followUser(usernameToFollow, user);
     }
 
     @DeleteMapping("/{username}/unfollow")
     @ResponseStatus(HttpStatus.OK)
-    public void unfollowUser(@PathVariable("username") String usernameToUnfollow, @RequestHeader("username") String username) {
-        usersService.unfollowUser(usernameToUnfollow, username);
+    public void unfollowUser(@PathVariable("username") String usernameToUnfollow, @AuthenticationPrincipal AppUser principal) {
+        AppUser user = usersService.getUserById(principal.getId());
+
+        usersService.unfollowUser(usernameToUnfollow, user);
     }
+
+//    @PatchMapping
+//    public ResponseEntity<?> changePassword(
+//            @RequestBody ChangePasswordRequest request,
+//            Principal connectedUser
+//    ) {
+//        usersService.changePassword(request, connectedUser);
+//        return ResponseEntity.ok().build();
+//    }
 
 }

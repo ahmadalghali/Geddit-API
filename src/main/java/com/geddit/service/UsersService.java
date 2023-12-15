@@ -2,46 +2,56 @@ package com.geddit.service;
 
 import com.geddit.converter.UserToDTOConverter;
 import com.geddit.dto.UserDTO;
-import com.geddit.dto.UserRegisterRequestDTO;
+import com.geddit.dto.auth.UserRegisterRequestDTO;
 import com.geddit.exceptions.UserIdNotFoundException;
 import com.geddit.exceptions.UsernameNotFoundException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.persistence.repository.UserRepository;
+import com.geddit.user.ChangePasswordRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UsersService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository repository;
 
-    public UsersService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public AppUser createUser(UserRegisterRequestDTO userRegisterRequestDTO) {
-        if (userRegisterRequestDTO.username().contains(" "))
-            throw new IllegalArgumentException("Username cannot contain spaces");
-        if (userRegisterRequestDTO.password().contains(" "))
-            throw new IllegalArgumentException("Password cannot contain spaces");
 
         AppUser appUser =
-                new AppUser(userRegisterRequestDTO.username(), userRegisterRequestDTO.password());
-        return saveUser(appUser);
+                new AppUser(userRegisterRequestDTO.email(), passwordEncoder.encode(userRegisterRequestDTO.password()));
+        return appUser;
     }
 
-    public AppUser getUserByUsername(String username) {
-        return userRepository
-                .findAppUserByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+    public AppUser getUserByEmail(String email) {
+        AppUser user = userRepository
+                .findAppUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+        return user;
     }
+//    public AppUser getUserByEmail(String email) {
+//        return userRepository
+//                .findAppUserByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException(email));
+//    }
 
-    public Optional<AppUser> getUserOptionalByUsername(String username) {
-        return userRepository.findAppUserByUsername(username);
+    public Optional<AppUser> getUserOptionalByEmail(String username) {
+        return userRepository.findAppUserByEmail(username);
     }
+//    public Optional<AppUser> getUserOptionalByEmail(String email) {
+//        return userRepository.findAppUserByEmail(email);
+//    }
 
-    private AppUser saveUser(AppUser newAppUser) {
+    public AppUser saveUser(AppUser newAppUser) {
         return userRepository.save(newAppUser);
     }
 
@@ -50,14 +60,13 @@ public class UsersService {
     }
 
     public List<UserDTO> searchUsersByKeyword(String keyword) {
-        List<AppUser> users = userRepository.findAllByUsernameContainingIgnoreCase(keyword);
+        List<AppUser> users = userRepository.findAllByEmailContainingIgnoreCase(keyword);
         return UserToDTOConverter.toDTOList(users);
     }
 
-    public void followUser(String usernameToFollow, String username) {
-        AppUser me = getUserByUsername(username);
+    public void followUser(String usernameToFollow, AppUser me) {
 
-        AppUser userToFollow = getUserByUsername(usernameToFollow);
+        AppUser userToFollow = getUserByEmail(usernameToFollow);
 
         var isSelf = userToFollow.getId().equals(me.getId());
 
@@ -72,10 +81,9 @@ public class UsersService {
         userRepository.save(me);
     }
 
-    public void unfollowUser(String usernameToUnfollow, String username) {
-        AppUser me = getUserByUsername(username);
+    public void unfollowUser(String usernameToUnfollow, AppUser me) {
 
-        AppUser userToUnfollow = getUserByUsername(usernameToUnfollow);
+        AppUser userToUnfollow = getUserByEmail(usernameToUnfollow);
 
         var isSelf = userToUnfollow.getId().equals(me.getId());
 
@@ -89,5 +97,26 @@ public class UsersService {
             throw new IllegalArgumentException("User not followed");
         }
         userRepository.save(me);
+    }
+
+
+    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
+
+        var user = (AppUser) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        // check if the current password is correct
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("Wrong password");
+        }
+        // check if the two new passwords are the same
+        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        // update the password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        // save the new password
+        repository.save(user);
     }
 }

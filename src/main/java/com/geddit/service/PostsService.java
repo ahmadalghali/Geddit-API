@@ -12,6 +12,8 @@ import com.geddit.persistence.entity.Post;
 import com.geddit.persistence.repository.CommunityRepository;
 import com.geddit.persistence.repository.PostRepository;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,37 +25,42 @@ public class PostsService {
   private final CommunityRepository communityRepository;
   private final CommunitiesService communitiesService;
   private final UsersService usersService;
+  private final AuthService authService;
+  private final PostToDTOConverter postToDTOConverter;
 
   public PostsService(
-      PostRepository postRepository,
-      CommunityRepository communityRepository,
-      CommunitiesService communitiesService,
-      UsersService usersService) {
+          PostRepository postRepository,
+          CommunityRepository communityRepository,
+          CommunitiesService communitiesService,
+          UsersService usersService, AuthService authService, PostToDTOConverter postToDTOConverter) {
     this.postRepository = postRepository;
     this.communityRepository = communityRepository;
     this.communitiesService = communitiesService;
     this.usersService = usersService;
+    this.authService = authService;
+    this.postToDTOConverter = postToDTOConverter;
   }
 
-  public PostDTO createPost(String communityName, CreatePostDTO createPostDTO, String username) {
+  public PostDTO createPost(String communityName, CreatePostDTO createPostDTO, AppUser user) {
     Community community = communitiesService.getCommunityByName(communityName);
-    AppUser author = usersService.getUserByUsername(username);
-    Post post = new Post(createPostDTO.title(), community, author);
+    Post post = new Post(createPostDTO.title(), community, user);
 
     if (!createPostDTO.body().trim().isEmpty()) {
       post.setBody(createPostDTO.body());
     }
 
-    return PostToDTOConverter.toDTO(postRepository.save(post));
+    return PostToDTOConverter.toDTO(postRepository.save(post), Optional.of(user));
   }
 
   public List<PostSummaryDTO> getAllPostsByCommunityName(String communityName) {
 
-    return PostToDTOConverter.toSummaryDTOList(postRepository.findAllPostsByCommunityName(communityName));
+    return this.postToDTOConverter.toSummaryDTOList(postRepository.findAllPostsByCommunityName(communityName));
   }
 
   public PostDTO getPostDTOById(String postId) {
-    return PostToDTOConverter.toDTO(getPostById(postId));
+
+    Optional<AppUser> currentUserOptional = authService.getCurrentUser();
+    return PostToDTOConverter.toDTO(getPostById(postId), currentUserOptional);
   }
 
   public Post getPostById(String postId) {
@@ -61,31 +68,38 @@ public class PostsService {
   }
 
   public List<PostSummaryDTO> searchPostsByKeyword(String keyword) {
-    return PostToDTOConverter.toSummaryDTOList(postRepository.findAllByTitleContainingIgnoreCase(keyword));
+    return  this.postToDTOConverter.toSummaryDTOList(postRepository.findAllByTitleContainingIgnoreCase(keyword));
   }
 
   public List<PostSummaryDTO> getUserPosts(String username) {
-    return PostToDTOConverter.toSummaryDTOList(postRepository.findAllByUsername(username));
+    return  this.postToDTOConverter.toSummaryDTOList(postRepository.findAllByUserEmail(username));
   }
 
-  public void deletePost(String postId, String username) {
+  public void deletePost(String postId, AppUser user) {
+    Post post = getPostById(postId);
+
+    if (!post.getAuthor().getId().equals(user.getId())) {
+      throw new IllegalArgumentException("You are unauthorized to delete this post as you are not the author");
+    }
     postRepository.deleteById(postId);
   }
 
-  public PostDTO updatePost(String postId, UpdatePostDTO updatePostDTO, String username) {
+  public PostDTO updatePost(String postId, UpdatePostDTO updatePostDTO, AppUser user) {
     Post post = getPostById(postId);
-    AppUser me = usersService.getUserByUsername(username);
+
+    if (!post.getAuthor().getId().equals(user.getId())) {
+      throw new IllegalArgumentException("You are unauthorized to update this post as you are not the author");
+    }
 
     if (updatePostDTO.body() != null) {
       post.setBody(updatePostDTO.body());
     }
 
-    return PostToDTOConverter.toDTO(postRepository.save(post));
+    return PostToDTOConverter.toDTO(postRepository.save(post), Optional.of(user));
   }
 
-  public PostDTO upvotePost(String postId, String username) {
+  public PostDTO upvotePost(String postId, AppUser user) {
     Post post = getPostById(postId);
-    AppUser user = usersService.getUserByUsername(username);
 
     if (post.getDownvotedBy().contains(user)) {
       post.getDownvotedBy().remove(user);
@@ -97,12 +111,11 @@ public class PostsService {
 //      throw new IllegalArgumentException("User already ");
 //    }
 
-    return PostToDTOConverter.toDTO(postRepository.save(post));
+    return PostToDTOConverter.toDTO(postRepository.save(post), Optional.of(user));
   }
 
-  public PostDTO downvotePost(String postId, String username) {
+  public PostDTO downvotePost(String postId, AppUser user) {
     Post post = getPostById(postId);
-    AppUser user = usersService.getUserByUsername(username);
 
     if (post.getUpvotedBy().contains(user)) {
       post.getUpvotedBy().remove(user);
@@ -114,13 +127,12 @@ public class PostsService {
 //      throw new IllegalArgumentException("User already ");
 //    }
 
-    return PostToDTOConverter.toDTO(postRepository.save(post));
+    return PostToDTOConverter.toDTO(postRepository.save(post), Optional.of(user));
   }
 
-  public PostDTO removeVoteFromPost(String postId, String username) {
+  public PostDTO removeVoteFromPost(String postId, AppUser user) {
 
     Post post = getPostById(postId);
-    AppUser user = usersService.getUserByUsername(username);
 
     if (post.getUpvotedBy().contains(user)) {
       post.getUpvotedBy().remove(user);
@@ -130,6 +142,7 @@ public class PostsService {
       post.getDownvotedBy().remove(user);
     }
 
-    return PostToDTOConverter.toDTO(postRepository.save(post));
+    return PostToDTOConverter.toDTO(postRepository.save(post), Optional.of(user));
   }
+
 }

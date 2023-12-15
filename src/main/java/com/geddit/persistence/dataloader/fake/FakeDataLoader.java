@@ -51,12 +51,13 @@ public class FakeDataLoader implements CommandLineRunner {
     List<AppUser> savedUsers = new ArrayList<>();
     int userCount = getRandomNumber(50);
     for (int i = 0; i < userCount; i++) {
+      String email = faker.internet().emailAddress();
       String username = faker.funnyName().name().replaceAll("\\s", "");
-      AppUser appUser = new AppUser(username, "password123");
+      AppUser appUser = new AppUser(email,  "password123");
       savedUsers.add(userRepository.save(appUser));
     }
-    userRepository.save(new AppUser("ahmad", "123"));
-    userRepository.save(new AppUser("mohie", "123"));
+    userRepository.save(new AppUser("ahmad@gmail.com", "123"));
+    userRepository.save(new AppUser("mohie@gmail.com", "123"));
 
     return savedUsers;
   }

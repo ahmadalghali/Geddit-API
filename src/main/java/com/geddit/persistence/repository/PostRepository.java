@@ -32,8 +32,8 @@ public interface PostRepository extends JpaRepository<Post, String> {
     @Query("""
                 SELECT p FROM Post p
                 LEFT JOIN p.author author
-                WHERE author.username = :username
+                WHERE author.email = :email
                 ORDER BY p.createdDate DESC
             """)
-    List<Post> findAllByUsername(String username);
+    List<Post> findAllByUserEmail(String email);
 }

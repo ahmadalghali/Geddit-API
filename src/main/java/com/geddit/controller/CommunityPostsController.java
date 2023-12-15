@@ -3,11 +3,14 @@ package com.geddit.controller;
 import com.geddit.dto.post.CreatePostDTO;
 import com.geddit.dto.post.PostDTO;
 import com.geddit.dto.post.PostSummaryDTO;
+import com.geddit.persistence.entity.AppUser;
 import com.geddit.service.PostsService;
 import java.util.List;
 
+import com.geddit.service.UsersService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class CommunityPostsController {
 
   private final PostsService postsService;
+  private final UsersService usersService;
 
-  public CommunityPostsController(PostsService postsService) {
+  public CommunityPostsController(PostsService postsService, UsersService usersService) {
     this.postsService = postsService;
+    this.usersService = usersService;
   }
 
   @PostMapping
@@ -25,8 +30,12 @@ public class CommunityPostsController {
   public PostDTO createPost(
       @PathVariable String communityName,
       @Valid @RequestBody CreatePostDTO createPostDTO,
-      @RequestHeader("username") String username) {
-    return postsService.createPost(communityName, createPostDTO, username);
+      @AuthenticationPrincipal AppUser principal
+  ) {
+
+    AppUser user = usersService.getUserById(principal.getId());
+
+    return postsService.createPost(communityName, createPostDTO, user);
   }
 
   @GetMapping

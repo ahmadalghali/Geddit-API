@@ -2,6 +2,7 @@ package com.geddit.converter;
 
 import com.geddit.dto.comment.CommentDTO;
 import com.geddit.enums.ContentVoteStatus;
+import com.geddit.persistence.entity.AppUser;
 import com.geddit.persistence.entity.Comment;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CommentToDTOConverter {
-  public static CommentDTO toDTO(Comment comment) {
+  public static CommentDTO toDTO(Comment comment, Optional<AppUser> userOptional) {
 
     String parentCommentId = null;
 
@@ -18,10 +19,9 @@ public class CommentToDTOConverter {
       parentCommentId = comment.getParentComment().get().getId();
     }
 
-    Set<CommentDTO> replies = toDTOSet(comment.getReplies());
+    Set<CommentDTO> replies = toDTOSet(comment.getReplies(), userOptional);
     var author = UserToDTOConverter.toDTO(comment.getAuthor());
     var voteCount = comment.getUpvotedBy().size() - comment.getDownvotedBy().size();
-    ContentVoteStatus myVote = ContentVoteStatus.UNVOTED;
 
     String communityName = comment.getPost().getCommunity().getName();
     String postId = comment.getPost().getId();
@@ -29,6 +29,21 @@ public class CommentToDTOConverter {
     String clientBaseUrl = "http://localhost:5173";
 
     String href = String.format("%s/g/%s/posts/%s?highlightedCommentId=%s", clientBaseUrl, communityName, postId, commentId);
+
+    ContentVoteStatus myVote;
+
+    if (userOptional.isPresent()) {
+      AppUser user = userOptional.get();
+      if (comment.getDownvotedBy().contains(user)) {
+        myVote = ContentVoteStatus.DOWNVOTED;
+      } else if (comment.getUpvotedBy().contains(user)) {
+        myVote = ContentVoteStatus.UPVOTED;
+      } else {
+        myVote = ContentVoteStatus.UNVOTED;
+      }
+    } else {
+      myVote = ContentVoteStatus.UNVOTED;
+    }
 
     return new CommentDTO(
         comment.getId(),
@@ -43,11 +58,11 @@ public class CommentToDTOConverter {
         comment.getCreatedDate());
   }
 
-  public static Set<CommentDTO> toDTOSet(List<Comment> comments) {
-    return comments.stream().map(CommentToDTOConverter::toDTO).collect(Collectors.toSet());
+  public static Set<CommentDTO> toDTOSet(List<Comment> comments, Optional<AppUser> userOptional) {
+    return comments.stream().map(comment -> CommentToDTOConverter.toDTO(comment, userOptional)).collect(Collectors.toSet());
   }
 
-  public static Set<CommentDTO> toDTOSet(Set<Comment> comments) {
-    return comments.stream().map(CommentToDTOConverter::toDTO).collect(Collectors.toSet());
+  public static Set<CommentDTO> toDTOSet(Set<Comment> comments, Optional<AppUser> userOptional) {
+    return comments.stream().map(comment -> CommentToDTOConverter.toDTO(comment, userOptional)).collect(Collectors.toSet());
   }
 }
