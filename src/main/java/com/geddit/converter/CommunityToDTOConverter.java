@@ -6,12 +6,12 @@ import com.geddit.dto.post.PostDTO;
 import com.geddit.persistence.entity.Community;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class CommunityToDTOConverter {
     public static CommunitySummaryDTO toDTO(Community community) {
         List<PostDTO> postDTOList =
-                community.getPosts().stream().map(PostToDTOConverter::toDTO).toList();
+                community.getPosts().stream().map(post -> PostToDTOConverter.toDTO(post, Optional.empty())).toList();
         UserDTO createdBy = UserToDTOConverter.toDTO(community.getCreatedBy());
         return new CommunitySummaryDTO(
                 community.getName(),

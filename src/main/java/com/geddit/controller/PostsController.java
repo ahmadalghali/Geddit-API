@@ -1,23 +1,24 @@
 package com.geddit.controller;
 
-import com.geddit.converter.CommentToDTOConverter;
-import com.geddit.dto.comment.CommentDTO;
 import com.geddit.dto.post.PostDTO;
 import com.geddit.dto.post.UpdatePostDTO;
+import com.geddit.persistence.entity.AppUser;
 import com.geddit.service.PostsService;
+import com.geddit.service.UsersService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 @RestController
 @RequestMapping("/posts")
 public class PostsController {
 
   private final PostsService postsService;
+  private final UsersService usersService;
 
-  public PostsController(PostsService postsService) {
+  public PostsController(PostsService postsService, UsersService usersService) {
     this.postsService = postsService;
+    this.usersService = usersService;
   }
 
   @GetMapping("/{postId}")
@@ -28,14 +29,18 @@ public class PostsController {
 
   @DeleteMapping("/{postId}")
   @ResponseStatus(HttpStatus.OK)
-  public void deletePost(@PathVariable String postId, @RequestHeader("username") String username) {
-    postsService.deletePost(postId, username);
+  public void deletePost(@PathVariable String postId, @AuthenticationPrincipal AppUser principal) {
+    AppUser user = usersService.getUserById(principal.getId());
+
+    postsService.deletePost(postId, user);
   }
 
   @PatchMapping("/{postId}")
   @ResponseStatus(HttpStatus.OK)
-  public PostDTO updatePost(@PathVariable String postId, @RequestBody UpdatePostDTO updatePostDTO, @RequestHeader("username") String username) {
-    return postsService.updatePost(postId, updatePostDTO, username);
+  public PostDTO updatePost(@PathVariable String postId, @RequestBody UpdatePostDTO updatePostDTO, @AuthenticationPrincipal AppUser principal) {
+    AppUser user = usersService.getUserById(principal.getId());
+
+    return postsService.updatePost(postId, updatePostDTO, user);
   }
 
 }
