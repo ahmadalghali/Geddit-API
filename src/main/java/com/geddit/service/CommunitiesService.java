@@ -10,7 +10,6 @@ import com.geddit.persistence.repository.CommunityRepository;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 @Slf4j
@@ -24,14 +23,13 @@ public class CommunitiesService {
     this.communityRepository = communityRepository;
   }
 
-  public CommunitySummaryDTO createCommunity(CreateCommunityDTO createCommunityDTO, String username) {
+  public CommunitySummaryDTO createCommunity(CreateCommunityDTO createCommunityDTO, AppUser user) {
     boolean communityExists = communityExistsByName(createCommunityDTO.name());
     if (communityExists) throw new IllegalArgumentException("Community exists");
 
-    AppUser createdBy = usersService.getUserByUsername(username);
 
     Community community =
-        new Community(createCommunityDTO.name(), createCommunityDTO.description(), createdBy);
+        new Community(createCommunityDTO.name(), createCommunityDTO.description(), user);
     return CommunityToDTOConverter.toDTO(saveCommunity(community));
   }
 
@@ -65,8 +63,7 @@ public class CommunitiesService {
     return communityRepository.save(newCommunity);
   }
 
-  public Integer joinCommunity(String communityName, String username) {
-    AppUser user = usersService.getUserByUsername(username);
+  public Integer joinCommunity(String communityName, AppUser user) {
     Community community = getCommunityByName(communityName);
 
 //    TODO: future improvements, check if blocked, allowed to join etc
@@ -81,8 +78,7 @@ public class CommunitiesService {
     return community.getMembers().size();
   }
 
-  public Integer leaveCommunity(String communityName, String username) {
-    AppUser user = usersService.getUserByUsername(username);
+  public Integer leaveCommunity(String communityName, AppUser user) {
     Community community = getCommunityByName(communityName);
 
 //    TODO: future improvements, check if blocked, allowed to join etc

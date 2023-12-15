@@ -16,7 +16,7 @@ public record PostDTO(
     List<CommentDTO> comments,
     UserDTO author,
     Integer voteCount,
-    ContentVoteStatus myVote
+    ContentVoteStatus userVoteStatus
 //    Integer upvotes,
 //    Integer downvotes
     ) {}

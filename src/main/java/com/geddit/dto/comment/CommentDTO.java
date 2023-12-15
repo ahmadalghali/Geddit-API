@@ -15,7 +15,7 @@ public record CommentDTO(
     String parentCommentId,
     Set<CommentDTO> replies,
     Integer voteCount,
-    ContentVoteStatus myVote,
+    ContentVoteStatus userVoteStatus,
     String href,
 
     LocalDateTime createdDate) {}

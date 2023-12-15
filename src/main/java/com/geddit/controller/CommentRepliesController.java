@@ -1,24 +1,24 @@
 package com.geddit.controller;
 
-import com.geddit.converter.CommentToDTOConverter;
 import com.geddit.dto.comment.CommentDTO;
 import com.geddit.dto.comment.CreateCommentDTO;
+import com.geddit.persistence.entity.AppUser;
 import com.geddit.service.CommentsService;
-import com.geddit.service.PostsService;
+import com.geddit.service.UsersService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 @RestController
 @RequestMapping("/comments/{commentId}/replies")
 public class CommentRepliesController {
 
   private final CommentsService commentsService;
-
-  public CommentRepliesController(CommentsService commentsService) {
+  private final UsersService usersService;
+  public CommentRepliesController(CommentsService commentsService, UsersService usersService) {
     this.commentsService = commentsService;
+    this.usersService = usersService;
   }
 
   @PostMapping
@@ -26,8 +26,9 @@ public class CommentRepliesController {
   public CommentDTO createReply(
           @PathVariable String commentId,
           @Valid @RequestBody CreateCommentDTO createCommentDto,
-          @RequestHeader("username") String username) {
-    return commentsService.createReplyToComment(commentId, username, createCommentDto);
+          @AuthenticationPrincipal AppUser principal) {
+    AppUser user = usersService.getUserById(principal.getId());
+    return commentsService.createReplyToComment(commentId, user, createCommentDto);
   }
 
 }

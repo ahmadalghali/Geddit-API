@@ -14,7 +14,7 @@ public record PostSummaryDTO(
     Integer commentCount,
     UserDTO author,
     Integer voteCount,
-    ContentVoteStatus myVote
+    ContentVoteStatus userVoteStatus
 //    Integer upvotes,
 //    Integer downvotes
     ) {}
