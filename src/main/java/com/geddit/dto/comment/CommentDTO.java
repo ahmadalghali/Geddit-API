@@ -3,7 +3,7 @@ package com.geddit.dto.comment;
 import com.geddit.dto.UserDTO;
 import com.geddit.enums.ContentVoteStatus;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,4 +18,4 @@ public record CommentDTO(
     ContentVoteStatus userVoteStatus,
     String href,
 
-    LocalDateTime createdDate) {}
+    Instant createdDate) {}
