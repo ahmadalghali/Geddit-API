@@ -1,7 +1,7 @@
 package com.geddit.controller;
 
 import com.geddit.dto.comment.CommentDTO;
-addimport com.geddit.persistence.entity.AppUser;
+import com.geddit.persistence.entity.AppUser;
 import com.geddit.service.CommentsService;
 import com.geddit.service.UsersService;
 import org.springframework.http.HttpStatus;
