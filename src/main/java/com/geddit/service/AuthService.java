@@ -4,6 +4,7 @@ import com.geddit.config.JwtService;
 import com.geddit.dto.auth.UserRegisterRequestDTO;
 import com.geddit.dto.auth.UserSignInRequestDTO;
 import com.geddit.dto.auth.UserSignInResponseDTO;
+import com.geddit.exceptions.RegisterRequiredException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.token.Token;
 import com.geddit.token.TokenRepository;
@@ -16,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,14 +49,16 @@ public class AuthService {
 
     public UserSignInResponseDTO signIn(UserSignInRequestDTO userSignInRequestDTO) {
 
-        var user = usersService.getUserByEmail(userSignInRequestDTO.email());
+        var userOptional = usersService.getUserOptionalByEmail(userSignInRequestDTO.email());
 
-        if (user == null) {
+        if (userOptional.isEmpty()) {
             // Handle the case where the user does not exist
             // You can throw an exception or return an appropriate response
             // For now, let's throw an exception as an example
-            throw new UsernameNotFoundException("USER_NOT_FOUND_REGISTER" + userSignInRequestDTO.email());
+            throw new RegisterRequiredException();
         }
+
+        var user = userOptional.get();
 
         try {
             authenticationManager.authenticate(
@@ -113,8 +115,6 @@ public class AuthService {
             }
             return Optional.empty();
         }
-
-
 
 //        public void refreshToken(
 //                HttpServletRequest request,
