@@ -1,21 +1,21 @@
 package com.geddit.persistence.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 
-@NoArgsConstructor @Getter @Setter
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @SQLDelete(sql = "UPDATE post SET deleted = true WHERE id=?")
 @Where(clause = "deleted = false")
@@ -52,7 +52,7 @@ public class Post {
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)
   @Column(nullable = false, updatable = false)
-  private LocalDateTime createdDate = LocalDateTime.now();
+  private Instant createdDate = Instant.now();
 
   private boolean deleted = false;
 

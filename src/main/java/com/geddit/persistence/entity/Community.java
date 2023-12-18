@@ -2,7 +2,7 @@ package com.geddit.persistence.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +37,7 @@ public class Community {
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)
   @Column(nullable = false, updatable = false)
-  private LocalDateTime createdDate = LocalDateTime.now();
+  private Instant createdDate = Instant.now();
 
   @OneToMany(mappedBy = "community")
   private List<Post> posts = new ArrayList<>();

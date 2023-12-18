@@ -4,7 +4,7 @@ import com.geddit.dto.UserDTO;
 import com.geddit.dto.comment.CommentDTO;
 import com.geddit.enums.ContentVoteStatus;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public record PostDTO(
@@ -12,11 +12,11 @@ public record PostDTO(
     String title,
     String body,
     String communityName,
-    LocalDateTime createdDate,
+    Instant createdDate,
     List<CommentDTO> comments,
     UserDTO author,
     Integer voteCount,
-    ContentVoteStatus myVote
+    ContentVoteStatus userVoteStatus
 //    Integer upvotes,
 //    Integer downvotes
     ) {}

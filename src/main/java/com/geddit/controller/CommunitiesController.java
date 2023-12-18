@@ -2,12 +2,14 @@ package com.geddit.controller;
 
 import com.geddit.dto.community.CommunitySummaryDTO;
 import com.geddit.dto.community.CreateCommunityDTO;
-import com.geddit.persistence.entity.Community;
+import com.geddit.persistence.entity.AppUser;
 import com.geddit.service.CommunitiesService;
+import com.geddit.service.UsersService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,27 +18,35 @@ import org.springframework.web.bind.annotation.*;
 public class CommunitiesController {
 
   private final CommunitiesService communitiesService;
+  private final UsersService usersService;
 
-  public CommunitiesController(CommunitiesService communitiesService) {
+  public CommunitiesController(CommunitiesService communitiesService, UsersService usersService) {
     this.communitiesService = communitiesService;
+    this.usersService = usersService;
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommunitySummaryDTO createCommunity(@Valid @RequestBody CreateCommunityDTO createCommunityDTO, @RequestHeader("username") String username) {
-    return communitiesService.createCommunity(createCommunityDTO, username);
+  public CommunitySummaryDTO createCommunity(@Valid @RequestBody CreateCommunityDTO createCommunityDTO, @AuthenticationPrincipal AppUser principal) {
+    AppUser user = usersService.getUserById(principal.getId());
+
+    return communitiesService.createCommunity(createCommunityDTO, user);
   }
 
   @PostMapping("/{communityName}/join")
   @ResponseStatus(HttpStatus.OK)
-  public Integer joinCommunity(@PathVariable String communityName, @RequestHeader("username") String username) {
-    return communitiesService.joinCommunity(communityName, username);
+  public Integer joinCommunity(@PathVariable String communityName, @AuthenticationPrincipal AppUser principal) {
+    AppUser user = usersService.getUserById(principal.getId());
+
+    return communitiesService.joinCommunity(communityName, user);
   }
 
   @DeleteMapping("/{communityName}/leave")
   @ResponseStatus(HttpStatus.OK)
-  public Integer leaveCommunity(@PathVariable String communityName, @RequestHeader("username") String username) {
-    return communitiesService.leaveCommunity(communityName, username);
+  public Integer leaveCommunity(@PathVariable String communityName, @AuthenticationPrincipal AppUser principal) {
+    AppUser user = usersService.getUserById(principal.getId());
+
+    return communitiesService.leaveCommunity(communityName, user);
   }
 
   @GetMapping("/{communityName}")
