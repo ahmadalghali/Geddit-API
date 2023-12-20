@@ -1,9 +1,9 @@
 #
 # Build stage
 #
-FROM openjdk:21-jdk-oracle AS build
+FROM maven:latest AS build
 COPY . .
-RUN #mvn clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 #
 # Package stage
