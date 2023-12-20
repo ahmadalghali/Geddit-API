@@ -1,9 +1,9 @@
 spring:
-  profiles:
-    datasource:
-      url: jdbc:postgresql://localhost:5432/geddit
-      username: postgres
-      password: password
+  datasource:
+    url: jdbc:postgresql://localhost:5432/geddit
+    username: postgres
+    password: password
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -12,9 +12,9 @@ spring:
         jdbc.batch_size: 30
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-logging:
-  level:
-    web: info
+#logging:
+#  level:
+#    web: info
 springdoc:
   api-docs:
     path: /swagger/api-docs

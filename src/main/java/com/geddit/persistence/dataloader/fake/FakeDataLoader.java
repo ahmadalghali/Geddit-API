@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("dev")
 public class FakeDataLoader implements CommandLineRunner {
   private final CommunityRepository communityRepository;
   private final PostRepository postRepository;

@@ -1,3 +1,11 @@
+server:
+  servlet:
+    context-path: /geddit/api
 spring:
   profiles:
-    active: prod
+    active: dev
+springdoc:
+  api-docs:
+    path: /swagger/api-docs
+  swagger-ui:
+    path: /swagger/swagger-ui.html
