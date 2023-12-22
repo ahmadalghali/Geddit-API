@@ -1,22 +1,25 @@
 version: '3'
 
 services:
-  geddit-api:
-    image: geddit-api
-    ports:
-      - "8080:8080"
-    depends_on:
-      - geddit-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://geddit-db:5432/geddit
-      SPRING_DATASOURCE_USERNAME: your-db-username
-      SPRING_DATASOURCE_PASSWORD: your-db-password
+#  geddit-api:
+#    image: geddit-api
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - db
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/geddit
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: password
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
-  geddit-db:
-    image: postgres:latest
+  db:
+    image: postgres:alpine
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: your-database-name
-      POSTGRES_USER: your-db-username
-      POSTGRES_PASSWORD: your-db-password
+      POSTGRES_DB: geddit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+
