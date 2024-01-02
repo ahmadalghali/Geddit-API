@@ -16,7 +16,7 @@ public interface CommunityRepository extends JpaRepository<Community, String> {
             """)
     List<Community> findAllByNameContainingIgnoreCase(String keyword);
 
-    boolean existsByName(String name);
+    boolean existsByNameIgnoreCase(String name);
 
     @Query("""
                SELECT c FROM Community c
