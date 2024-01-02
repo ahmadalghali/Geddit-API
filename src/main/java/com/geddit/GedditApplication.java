@@ -17,25 +17,25 @@ public class GedditApplication {
         SpringApplication.run(GedditApplication.class, args);
     }
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry
-                        .addMapping("/**")
-                        .allowedOrigins(
-                                "https://geddit-app.vercel.app",
-                                "http://localhost:5173",
-                                "http://127.0.0.1:5173",
-                                "http://localhost:5174",
-                                "http://127.0.0.1:5174")
-                        .allowedMethods("*")
-                        //                .allowedHeaders("*")
-                        //                .allowCredentials(true)
-                        .maxAge(3600)
-                        .allowCredentials(true);
-            }
-        };
-    }
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry
+//                        .addMapping("/**")
+//                        .allowedOrigins(
+//                                "https://geddit-app.vercel.app",
+//                                "http://localhost:5173",
+//                                "http://127.0.0.1:5173",
+//                                "http://localhost:5174",
+//                                "http://127.0.0.1:5174")
+//                        .allowedMethods("*")
+//                        //                .allowedHeaders("*")
+//                        //                .allowCredentials(true)
+//                        .maxAge(3600)
+//                        .allowCredentials(true);
+//            }
+//        };
+//    }
 }
