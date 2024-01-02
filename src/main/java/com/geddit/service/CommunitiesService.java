@@ -4,46 +4,55 @@ import com.geddit.converter.CommunityToDTOConverter;
 import com.geddit.dto.community.CommunitySummaryDTO;
 import com.geddit.dto.community.CreateCommunityDTO;
 import com.geddit.exceptions.CommunityNotFoundException;
+import com.geddit.exceptions.GedditException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.persistence.entity.Community;
 import com.geddit.persistence.repository.CommunityRepository;
 import java.util.List;
+import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import javax.swing.text.html.Option;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CommunitiesService {
 
   private final UsersService usersService;
+  private final AuthService authService;
   private final CommunityRepository communityRepository;
-
-  public CommunitiesService(UsersService usersService, CommunityRepository communityRepository) {
-    this.usersService = usersService;
-    this.communityRepository = communityRepository;
-  }
 
   public CommunitySummaryDTO createCommunity(CreateCommunityDTO createCommunityDTO, AppUser user) {
     boolean communityExists = communityExistsByName(createCommunityDTO.name());
-    if (communityExists) throw new IllegalArgumentException("Community exists");
+    if (communityExists) throw new GedditException("Cannot create community, it already exists.");
 
 
     Community community =
         new Community(createCommunityDTO.name(), createCommunityDTO.description(), user);
-    return CommunityToDTOConverter.toDTO(saveCommunity(community));
+    Optional<AppUser> userOptional = this.authService.getCurrentUser();
+
+    return CommunityToDTOConverter.toDTO(saveCommunity(community), userOptional);
   }
 
   boolean communityExistsByName(String communityName) {
-    return communityRepository.existsByName(communityName);
+    return communityRepository.existsByNameIgnoreCase(communityName);
   }
 
   public List<CommunitySummaryDTO> getCommunities() {
-    return CommunityToDTOConverter.toDTOList(communityRepository.findAll());
+    Optional<AppUser> userOptional = this.authService.getCurrentUser();
+    return CommunityToDTOConverter.toDTOList(communityRepository.findAll(), userOptional);
   }
 
   public List<CommunitySummaryDTO> searchCommunitiesByKeyword(String name) {
     List<Community> results = communityRepository.findAllByNameContainingIgnoreCase(name);
-    return CommunityToDTOConverter.toDTOList(results);
+    Optional<AppUser> userOptional = this.authService.getCurrentUser();
+
+    return CommunityToDTOConverter.toDTOList(results, userOptional);
   }
 
   public Community getCommunityByName(String communityName) {
@@ -56,7 +65,9 @@ public class CommunitiesService {
     Community community = communityRepository
             .findCommunitySummaryByName(communityName)
             .orElseThrow(() -> new CommunityNotFoundException(communityName));
-    return CommunityToDTOConverter.toDTO(community);
+    Optional<AppUser> userOptional = this.authService.getCurrentUser();
+
+    return CommunityToDTOConverter.toDTO(community, userOptional);
   }
 
   private Community saveCommunity(Community newCommunity) {
@@ -69,7 +80,7 @@ public class CommunitiesService {
 //    TODO: future improvements, check if blocked, allowed to join etc
 
     if (community.getMembers().contains(user)) {
-      throw new IllegalArgumentException("already part of this community");
+      throw new GedditException("You're already part of g/" + communityName);
     }
 
     community.getMembers().add(user);
@@ -86,7 +97,7 @@ public class CommunitiesService {
     if (community.getMembers().contains(user)) {
       community.getMembers().remove(user);
     } else {
-      throw new IllegalArgumentException("user is not part of this community");
+      throw new GedditException("You're not a member of g/" + communityName);
     }
     communityRepository.save(community);
 

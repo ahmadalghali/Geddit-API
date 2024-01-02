@@ -5,6 +5,7 @@ import com.geddit.dto.post.CreatePostDTO;
 import com.geddit.dto.post.PostDTO;
 import com.geddit.dto.post.PostSummaryDTO;
 import com.geddit.dto.post.UpdatePostDTO;
+import com.geddit.exceptions.GedditException;
 import com.geddit.exceptions.PostNotFoundException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.persistence.entity.Community;
@@ -79,7 +80,7 @@ public class PostsService {
     Post post = getPostById(postId);
 
     if (!post.getAuthor().getId().equals(user.getId())) {
-      throw new IllegalArgumentException("You are unauthorized to delete this post as you are not the author");
+      throw new GedditException("You are unauthorized to delete this post as you are not the author.");
     }
     postRepository.deleteById(postId);
   }
@@ -88,7 +89,7 @@ public class PostsService {
     Post post = getPostById(postId);
 
     if (!post.getAuthor().getId().equals(user.getId())) {
-      throw new IllegalArgumentException("You are unauthorized to update this post as you are not the author");
+      throw new GedditException("You are unauthorized to update this post as you are not the author.");
     }
 
     if (updatePostDTO.body() != null) {

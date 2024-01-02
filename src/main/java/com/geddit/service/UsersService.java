@@ -3,6 +3,7 @@ package com.geddit.service;
 import com.geddit.converter.UserToDTOConverter;
 import com.geddit.dto.UserDTO;
 import com.geddit.dto.auth.UserRegisterRequestDTO;
+import com.geddit.exceptions.GedditException;
 import com.geddit.exceptions.UserIdNotFoundException;
 import com.geddit.exceptions.UsernameNotFoundException;
 import com.geddit.persistence.entity.AppUser;
@@ -71,11 +72,11 @@ public class UsersService {
         var isSelf = userToFollow.getId().equals(me.getId());
 
         if (isSelf) {
-            throw new IllegalArgumentException("Cannot follow yourself");
+            throw new GedditException("Cannot follow yourself.");
         }
 
         if (me.getFollowing().contains(userToFollow)) {
-            throw new IllegalArgumentException("User already followed");
+            throw new GedditException("User already followed.");
         }
         me.getFollowing().add(userToFollow);
         userRepository.save(me);
@@ -88,13 +89,13 @@ public class UsersService {
         var isSelf = userToUnfollow.getId().equals(me.getId());
 
         if (isSelf) {
-            throw new IllegalArgumentException("Cannot unfollow yourself");
+            throw new GedditException("Cannot unfollow yourself.");
         }
 
         if (me.getFollowing().contains(userToUnfollow)) {
             me.getFollowing().remove(userToUnfollow);
         } else {
-            throw new IllegalArgumentException("User not followed");
+            throw new GedditException("User not followed.");
         }
         userRepository.save(me);
     }

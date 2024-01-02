@@ -4,7 +4,7 @@ import com.geddit.config.JwtService;
 import com.geddit.dto.auth.UserRegisterRequestDTO;
 import com.geddit.dto.auth.UserSignInRequestDTO;
 import com.geddit.dto.auth.UserSignInResponseDTO;
-import com.geddit.exceptions.RegisterRequiredException;
+import com.geddit.exceptions.GedditException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.token.Token;
 import com.geddit.token.TokenRepository;
@@ -36,7 +36,7 @@ public class AuthService {
             Optional<AppUser> userOptional =
                     usersService.getUserOptionalByEmail(userRegisterRequestDTO.email());
 
-            if (userOptional.isPresent()) throw new IllegalArgumentException("Email already exists");
+            if (userOptional.isPresent()) throw new GedditException("Email already exists.");
             AppUser user = usersService.createUser(userRegisterRequestDTO);
 
             var jwtToken = jwtService.generateToken(user);
@@ -55,7 +55,7 @@ public class AuthService {
             // Handle the case where the user does not exist
             // You can throw an exception or return an appropriate response
             // For now, let's throw an exception as an example
-            throw new RegisterRequiredException();
+            throw new GedditException("Please register.");
         }
 
         var user = userOptional.get();
@@ -80,7 +80,7 @@ public class AuthService {
             // Handle authentication failure (e.g., invalid credentials)
             // You can throw an exception or return an appropriate response
             // For now, let's throw an exception as an example
-            throw new IllegalArgumentException("Authentication failed");
+            throw new GedditException("Authentication failed");
         }
     }
 

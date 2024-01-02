@@ -5,6 +5,7 @@ import com.geddit.dto.comment.CommentDTO;
 import com.geddit.dto.comment.CreateCommentDTO;
 import com.geddit.dto.comment.UpdateCommentDTO;
 import com.geddit.exceptions.CommentNotFoundException;
+import com.geddit.exceptions.GedditException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.persistence.entity.Comment;
 import com.geddit.persistence.entity.Post;
@@ -72,7 +73,7 @@ public class CommentsService {
     Comment comment = getCommentById(commentId);
 
     if (!comment.getAuthor().getId().equals(user.getId())) {
-      throw new IllegalArgumentException("You are unauthorized to delete this comment as you are not the author");
+      throw new GedditException("You are unauthorized to delete this comment as you are not the author.");
     }
 
     commentRepository.deleteById(commentId);
@@ -82,7 +83,7 @@ public class CommentsService {
     Comment comment = getCommentById(commentId);
 
     if (!comment.getAuthor().getId().equals(user.getId())) {
-      throw new IllegalArgumentException("You are unauthorized to update this comment as you are not the author");
+      throw new GedditException("You are unauthorized to update this comment as you are not the author");
     }
     if (updateCommentDTO.text() != null) {
       comment.setText(updateCommentDTO.text());

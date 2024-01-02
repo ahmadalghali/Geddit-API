@@ -25,13 +25,32 @@ public class GlobalExceptionHandler  {
 
     // Add more @ExceptionHandler methods for other custom exceptions
 
-    @ExceptionHandler(RegisterRequiredException.class)
-    public ResponseEntity<Object> handleSignInUserNotDoesNotExist(RegisterRequiredException ex, WebRequest request) {
+//    @ExceptionHandler(RegisterRequiredException.class)
+//    public ResponseEntity<Object> handleSignInUserNotDoesNotExist(RegisterRequiredException ex, WebRequest request) {
+//        Map<String, Object> body = new LinkedHashMap<>();
+//        body.put("timestamp", LocalDateTime.now());
+//        body.put("message", ex.getMessage());
+//        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+//    }
+
+    @ExceptionHandler(GedditException.class)
+    public ResponseEntity<Object> handleGedditException(GedditException ex, WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        body.put("status", ex.getHttpStatus());
+        return new ResponseEntity(body, ex.getHttpStatus());
     }
+
+//    @ExceptionHandler(IllegalArgumentException.class)
+//    public ResponseEntity<Object> handleSignInUserNotDoesNotExist(IllegalArgumentException ex, WebRequest request) {
+//        Map<String, Object> body = new LinkedHashMap<>();
+//        body.put("timestamp", LocalDateTime.now());
+//        body.put("message", ex.getMessage());
+//        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+//    }
+
+
 //
 //    @ExceptionHandler(EmailExistsException.class)
 //    public ResponseEntity<Object> handleEmailExists(EmailExistsException ex, WebRequest request) {
