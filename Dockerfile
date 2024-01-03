@@ -1,7 +1,7 @@
 FROM openjdk:21-jdk
-WORKDIR /app
+#WORKDIR /app
 
-COPY /target/geddit-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY target/geddit-0.0.1-SNAPSHOT.jar app.jar
 
 #EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar", "--spring.profiles.active=prod"]
