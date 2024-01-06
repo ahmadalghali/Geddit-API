@@ -10,7 +10,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<AppUser, String> {
 //  Optional<AppUser> findAppUserByEmail(String email);
 
-  Optional<AppUser> findAppUserByEmail(String username);
+//  Optional<AppUser> findAppUserByEmail(String email);
+//  Optional<AppUser> findByEmail(String email);
 
   @Query(
       """
@@ -19,4 +20,6 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
                 GROUP BY u
               """)
   List<AppUser> findAllByEmailContainingIgnoreCase(String keyword);
+
+  Optional<AppUser> findByEmail(String email);
 }

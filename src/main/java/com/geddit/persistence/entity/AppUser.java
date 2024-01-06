@@ -3,30 +3,31 @@ package com.geddit.persistence.entity;
 import com.geddit.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Entity
 public class AppUser implements UserDetails {
 
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @GeneratedValue
+//    @GeneratedValue(generator = "system-uuid")
+//    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
     @NotNull
+    @Column
     private String email;
     @NotNull
+    @Column
     private String password;
-
     @Column
     private String profileImageUrl;
 
@@ -49,8 +50,8 @@ public class AppUser implements UserDetails {
 //    @Enumerated(EnumType.STRING)
 //    private Role role;
 
-    @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
+//    @OneToMany(mappedBy = "user")
+//    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

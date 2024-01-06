@@ -35,7 +35,7 @@ public class UsersService {
 
     public AppUser getUserByEmail(String email) {
         AppUser user = userRepository
-                .findAppUserByEmail(email)
+                .findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         return user;
     }
@@ -46,7 +46,7 @@ public class UsersService {
 //    }
 
     public Optional<AppUser> getUserOptionalByEmail(String username) {
-        return userRepository.findAppUserByEmail(username);
+        return userRepository.findByEmail(username);
     }
 //    public Optional<AppUser> getUserOptionalByEmail(String email) {
 //        return userRepository.findAppUserByEmail(email);

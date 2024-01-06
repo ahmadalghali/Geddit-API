@@ -26,7 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthService {
         private final UsersService usersService;
-    private final TokenRepository tokenRepository;
+//    private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -42,7 +42,7 @@ public class AuthService {
             var jwtToken = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(user);
             var savedUser = usersService.saveUser(user);
-            saveUserToken(savedUser, jwtToken);
+//            saveUserToken(savedUser, jwtToken);
 
             return new UserSignInResponseDTO(jwtToken, refreshToken);
         }
@@ -71,8 +71,8 @@ public class AuthService {
             var jwtToken = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(user);
 
-            revokeAllUserTokens(user);
-            saveUserToken(user, jwtToken);
+//            revokeAllUserTokens(user);
+//            saveUserToken(user, jwtToken);
 
             return new UserSignInResponseDTO(jwtToken, refreshToken);
 
@@ -85,27 +85,27 @@ public class AuthService {
     }
 
 
-    private void saveUserToken(AppUser user, String jwtToken) {
-            var token = Token.builder()
-                    .user(user)
-                    .token(jwtToken)
-                    .tokenType(TokenType.BEARER)
-                    .expired(false)
-                    .revoked(false)
-                    .build();
-            tokenRepository.save(token);
-        }
+//    private void saveUserToken(AppUser user, String jwtToken) {
+//            var token = Token.builder()
+//                    .user(user)
+//                    .token(jwtToken)
+//                    .tokenType(TokenType.BEARER)
+//                    .expired(false)
+//                    .revoked(false)
+//                    .build();
+//            tokenRepository.save(token);
+//        }
 
-        private void revokeAllUserTokens(AppUser user) {
-            var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-            if (validUserTokens.isEmpty())
-                return;
-            validUserTokens.forEach(token -> {
-                token.setExpired(true);
-                token.setRevoked(true);
-            });
-            tokenRepository.saveAll(validUserTokens);
-        }
+//        private void revokeAllUserTokens(AppUser user) {
+//            var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+//            if (validUserTokens.isEmpty())
+//                return;
+//            validUserTokens.forEach(token -> {
+//                token.setExpired(true);
+//                token.setRevoked(true);
+//            });
+//            tokenRepository.saveAll(validUserTokens);
+//        }
 
         public Optional<AppUser> getCurrentUser() {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

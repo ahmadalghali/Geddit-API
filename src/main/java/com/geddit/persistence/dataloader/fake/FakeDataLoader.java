@@ -58,8 +58,8 @@ public class FakeDataLoader implements CommandLineRunner {
       AppUser appUser = new AppUser(email,  "password123");
       savedUsers.add(userRepository.save(appUser));
     }
-    userRepository.save(new AppUser("ahmad@gmail.com", "123"));
-    userRepository.save(new AppUser("mohie@gmail.com", "123"));
+    userRepository.save(new AppUser("ahmad@gmail.com", "password123"));
+    userRepository.save(new AppUser("mohie@gmail.com", "password123"));
 
     return savedUsers;
   }
