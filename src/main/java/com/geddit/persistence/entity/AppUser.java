@@ -18,9 +18,8 @@ import java.util.*;
 public class AppUser implements UserDetails {
 
     @Id
-    @GeneratedValue
-//    @GeneratedValue(generator = "system-uuid")
-//    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
     @NotNull
     @Column
