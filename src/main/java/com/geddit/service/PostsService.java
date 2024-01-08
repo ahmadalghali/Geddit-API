@@ -48,6 +48,7 @@ public class PostsService {
 
     if (!createPostDTO.body().trim().isEmpty()) {
       post.setBody(createPostDTO.body());
+      post.getUpvotedBy().add(user);
     }
 
     return PostToDTOConverter.toDTO(postRepository.save(post), Optional.of(user));
