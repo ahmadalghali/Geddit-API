@@ -37,6 +37,7 @@ public class CommentsService {
     Post post = postsService.getPostById(postId);
 
     Comment comment = new Comment(createCommentDTO.text(), user, post);
+    comment.getUpvotedBy().add(user);
     return CommentToDTOConverter.toDTO(commentRepository.save(comment), Optional.of(user));
   }
 
