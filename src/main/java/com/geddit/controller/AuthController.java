@@ -25,6 +25,13 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(authService.register(request));
     }
+
+    @PostMapping("/temporary-demo-sign-in")
+    public ResponseEntity<UserSignInResponseDTO> register() {
+        return ResponseEntity.ok(authService.temporaryDemoRegistration());
+    }
+
+
     @PostMapping("/sign-in")
     public ResponseEntity<UserSignInResponseDTO> signIn(
             @RequestBody UserSignInRequestDTO request

@@ -31,21 +31,33 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-        public UserSignInResponseDTO register(UserRegisterRequestDTO userRegisterRequestDTO) {
+    public UserSignInResponseDTO register(UserRegisterRequestDTO userRegisterRequestDTO) {
 
-            Optional<AppUser> userOptional =
-                    usersService.getUserOptionalByEmail(userRegisterRequestDTO.email());
+        Optional<AppUser> userOptional =
+                usersService.getUserOptionalByEmail(userRegisterRequestDTO.email());
 
-            if (userOptional.isPresent()) throw new GedditException("Email already exists.");
-            AppUser user = usersService.createUser(userRegisterRequestDTO);
+        if (userOptional.isPresent()) throw new GedditException("Email already exists.");
+        AppUser user = usersService.createUser(userRegisterRequestDTO);
 
-            var jwtToken = jwtService.generateToken(user);
-            var refreshToken = jwtService.generateRefreshToken(user);
-            var savedUser = usersService.saveUser(user);
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        var savedUser = usersService.saveUser(user);
 //            saveUserToken(savedUser, jwtToken);
 
-            return new UserSignInResponseDTO(jwtToken, refreshToken);
-        }
+        return new UserSignInResponseDTO(jwtToken, refreshToken);
+    }
+
+    public UserSignInResponseDTO temporaryDemoRegistration() {
+
+        AppUser demoUser = usersService.createDemoUser();
+
+        var jwtToken = jwtService.generateToken(demoUser);
+        var refreshToken = jwtService.generateRefreshToken(demoUser);
+        var savedUser = usersService.saveUser(demoUser);
+
+
+        return new UserSignInResponseDTO(jwtToken, refreshToken);
+    }
 
     public UserSignInResponseDTO signIn(UserSignInRequestDTO userSignInRequestDTO) {
 
