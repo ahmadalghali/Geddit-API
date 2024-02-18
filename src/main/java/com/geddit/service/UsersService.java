@@ -9,6 +9,7 @@ import com.geddit.exceptions.UsernameNotFoundException;
 import com.geddit.persistence.entity.AppUser;
 import com.geddit.persistence.repository.UserRepository;
 import com.geddit.user.ChangePasswordRequest;
+import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +25,8 @@ public class UsersService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final Faker faker = new Faker();
+
 
 
     public AppUser createUser(UserRegisterRequestDTO userRegisterRequestDTO) {
@@ -32,6 +35,14 @@ public class UsersService {
                 new AppUser(userRegisterRequestDTO.email(), passwordEncoder.encode(userRegisterRequestDTO.password()));
         return appUser;
     }
+
+    public AppUser createDemoUser() {
+
+        AppUser appUser =
+                new AppUser(faker.internet().safeEmailAddress(), passwordEncoder.encode(faker.internet().password()));
+        return appUser;
+    }
+
 
     public AppUser getUserByEmail(String email) {
         AppUser user = userRepository
