@@ -14,6 +14,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -55,11 +56,11 @@ public class FakeDataLoader implements CommandLineRunner {
     for (int i = 0; i < userCount; i++) {
       String email = faker.internet().emailAddress();
       String username = faker.funnyName().name().replaceAll("\\s", "");
-      AppUser appUser = new AppUser(email,  "password123");
+      AppUser appUser = new AppUser(email,  new BCryptPasswordEncoder().encode("password123"));
       savedUsers.add(userRepository.save(appUser));
     }
-    userRepository.save(new AppUser("ahmad@gmail.com", "password123"));
-    userRepository.save(new AppUser("mohie@gmail.com", "password123"));
+    userRepository.save(new AppUser("ahmad@gmail.com", new BCryptPasswordEncoder().encode("password123")));
+    userRepository.save(new AppUser("mohie@gmail.com", new BCryptPasswordEncoder().encode("password123")));
 
     return savedUsers;
   }
