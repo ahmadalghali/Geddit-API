@@ -26,7 +26,7 @@ public class CommentToDTOConverter {
     String communityName = comment.getPost().getCommunity().getName();
     String postId = comment.getPost().getId();
     String commentId = comment.getId();
-    String clientBaseUrl = "http://localhost:5173";
+    String clientBaseUrl = "https://geddit-app.vercel.app";
 
     String href = String.format("%s/g/%s/posts/%s?highlightedCommentId=%s", clientBaseUrl, communityName, postId, commentId);
 
